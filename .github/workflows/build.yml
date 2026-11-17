@@ -28,7 +28,10 @@ jobs:
         run: |
           set -e
           F=CDMC_master_system_installer-macOS.pkg
-          mkdir -p /tmp/dl && cp "$F" versions-macOS.txt INSTALL.txt /tmp/dl/ && cd /tmp/dl && git init -q -b downloads-macos && git add -A
+          mkdir -p /tmp/z/CDMC_master_system_installer-macOS && cp "$F" /tmp/z/CDMC_master_system_installer-macOS/
+          cp INSTALL.txt "/tmp/z/CDMC_master_system_installer-macOS/How to install (read me).txt"
+          (cd /tmp/z && ditto -c -k --sequesterRsrc --keepParent CDMC_master_system_installer-macOS ../CDMC_master_system_installer-macOS.zip)
+          mkdir -p /tmp/dl && cp "$F" /tmp/CDMC_master_system_installer-macOS.zip versions-macOS.txt INSTALL.txt /tmp/dl/ && cd /tmp/dl && git init -q -b downloads-macos && git add -A
           git -c user.name=ci -c user.email=ci@users.noreply.github.com commit -qm "$F for ${GITHUB_SHA}"
           for try in 1 2 3 4; do
             git -c http.postBuffer=157286400 push -qf "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}" downloads-macos && break
@@ -80,7 +83,10 @@ jobs:
         run: |
           set -e
           F=CDMC_master_system_installer-Windows.exe
-          mkdir -p /tmp/dl && cp "$F" versions-Windows.txt INSTALL.txt /tmp/dl/ && cd /tmp/dl && git init -q -b downloads-windows && git add -A
+          mkdir -p z/CDMC_master_system_installer-Windows && cp "$F" z/CDMC_master_system_installer-Windows/
+          cp INSTALL.txt "z/CDMC_master_system_installer-Windows/How to install (read me).txt"
+          (cd z && 7z a -tzip -mx=9 ../CDMC_master_system_installer-Windows.zip CDMC_master_system_installer-Windows > /dev/null)
+          mkdir -p /tmp/dl && cp "$F" CDMC_master_system_installer-Windows.zip versions-Windows.txt INSTALL.txt /tmp/dl/ && cd /tmp/dl && git init -q -b downloads-windows && git add -A
           git -c user.name=ci -c user.email=ci@users.noreply.github.com commit -qm "$F for ${GITHUB_SHA}"
           for try in 1 2 3 4; do
             git -c http.postBuffer=157286400 push -qf "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}" downloads-windows && break
