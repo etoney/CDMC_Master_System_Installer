@@ -1,0 +1,92 @@
+name: Build the Mix System installers
+
+# Run it from the Actions tab (Run workflow) whenever any Mix System plugin has a new version:
+# it pulls the newest zip of each one from its downloads-macos / downloads-windows branch.
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  macos:
+    runs-on: macos-15-intel
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - name: Fetch the plugins
+        env: { GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}" }
+        run: bash fetch.sh macOS
+      - name: Build the .pkg
+        run: bash mac/build.sh
+      - name: Test-install it on this Mac
+        run: bash mac/test-install.sh
+      - name: Publish to downloads-macos
+        shell: bash
+        run: |
+          set -e
+          F=CDMC_master_system_installer-macOS.pkg
+          mkdir -p /tmp/dl && cp "$F" versions-macOS.txt INSTALL.txt /tmp/dl/ && cd /tmp/dl && git init -q -b downloads-macos && git add -A
+          git -c user.name=ci -c user.email=ci@users.noreply.github.com commit -qm "$F for ${GITHUB_SHA}"
+          for try in 1 2 3 4; do
+            git -c http.postBuffer=157286400 push -qf "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}" downloads-macos && break
+            [ "$try" = 4 ] && exit 1; echo "push failed, retrying in 20 s"; sleep 20
+          done
+      - uses: actions/upload-artifact@v4
+        with:
+          name: CDMC_master_system_installer-macOS
+          path: CDMC_master_system_installer-macOS.pkg
+
+  windows:
+    runs-on: windows-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - name: Fetch the plugins
+        shell: bash
+        env: { GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}" }
+        run: bash fetch.sh Windows
+      - name: Build the setup .exe (Inno Setup)
+        shell: pwsh
+        run: |
+          python windows/make_iss.py | Out-Null
+          $iscc = "${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe"
+          if (-not (Test-Path $iscc)) { choco install innosetup -y --no-progress | Out-Null }
+          & $iscc build-win\installer.iss
+          if ($LASTEXITCODE -ne 0) { exit 1 }
+          Copy-Item build-win\CDMC_master_system_installer-Windows.exe .
+      - name: Test-install it on this PC
+        shell: pwsh
+        run: |
+          $p = Start-Process -FilePath .\CDMC_master_system_installer-Windows.exe -ArgumentList '/VERYSILENT','/SUPPRESSMSGBOXES','/NORESTART','/LOG=install.log' -Wait -PassThru
+          if ($p.ExitCode -ne 0) { Get-Content install.log -Tail 40; exit 1 }
+          $vst = "${env:CommonProgramFiles}\VST3"
+          $app = "${env:ProgramFiles}\Castle Danger Music Company"
+          Get-ChildItem $vst | Format-Table Name
+          Get-ChildItem $app -Recurse -Depth 1 | Format-Table FullName
+          $fail = 0
+          Get-Content versions-Windows.txt | ForEach-Object {
+            $name = ($_ -split ' ', 3)[2]
+            $squash = $name -replace ' ', ''
+            $hit = Get-ChildItem $vst -Filter *.vst3 | Where-Object { $_.Name -eq "$name.vst3" -or $_.Name -eq "$squash.vst3" }
+            if (-not $hit) { Write-Host "::error::$name.vst3 missing"; $fail = 1 }
+          }
+          if (-not (Test-Path "$app\Guides\Mix System User Guide.pdf")) { Write-Host "::error::guide missing"; $fail = 1 }
+          exit $fail
+      - name: Publish to downloads-windows
+        shell: bash
+        run: |
+          set -e
+          F=CDMC_master_system_installer-Windows.exe
+          mkdir -p /tmp/dl && cp "$F" versions-Windows.txt INSTALL.txt /tmp/dl/ && cd /tmp/dl && git init -q -b downloads-windows && git add -A
+          git -c user.name=ci -c user.email=ci@users.noreply.github.com commit -qm "$F for ${GITHUB_SHA}"
+          for try in 1 2 3 4; do
+            git -c http.postBuffer=157286400 push -qf "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}" downloads-windows && break
+            [ "$try" = 4 ] && exit 1; echo "push failed, retrying in 20 s"; sleep 20
+          done
+      - uses: actions/upload-artifact@v4
+        with:
+          name: CDMC_master_system_installer-Windows
+          path: CDMC_master_system_installer-Windows.exe

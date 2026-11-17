@@ -1,0 +1,7 @@
+stage/
+dl/
+build-mac/
+build-win/
+*.pkg
+*.exe
+versions-*.txt
