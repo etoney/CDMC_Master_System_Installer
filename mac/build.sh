@@ -15,7 +15,9 @@ add_component () {   # id title description version root
   # bundles must install where we say, not wherever an older copy happens to sit
   pkgbuild --analyze --root "$root" "$plist" >/dev/null
   i=0; while /usr/libexec/PlistBuddy -c "Print :$i" "$plist" >/dev/null 2>&1; do
-    /usr/libexec/PlistBuddy -c "Set :$i:BundleIsRelocatable false" "$plist"; i=$((i+1)); done
+    /usr/libexec/PlistBuddy -c "Set :$i:BundleIsRelocatable false" "$plist" 2>/dev/null \
+      || /usr/libexec/PlistBuddy -c "Add :$i:BundleIsRelocatable bool false" "$plist"
+    i=$((i+1)); done
   # postinstall: clear quarantine on exactly what this component installed, park older per-user copies, refresh AU cache
   mkdir -p "$scripts"
   {
