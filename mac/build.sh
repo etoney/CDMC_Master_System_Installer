@@ -8,8 +8,8 @@ cp mac/resources/* build-mac/resources/
 cp LICENSE.txt build-mac/resources/license.txt
 
 choices=""; outline=""; refs=""
-add_component () {   # id title description version root
-  local id="$1" title="$2" desc="$3" ver="$4" root="$5" required="${6:-no}"
+add_component () {   # id title description version root [required] [extra postinstall line]
+  local id="$1" title="$2" desc="$3" ver="$4" root="$5" required="${6:-no}" extra="${7:-}"
   local plist="build-mac/$id.plist" scripts="build-mac/scripts-$id"
   xattr -cr "$root" 2>/dev/null || true
   # bundles must install where we say, not wherever an older copy happens to sit
@@ -31,6 +31,7 @@ add_component () {   # id title description version root
         echo "if [ -n \"\$H\" ] && [ -e \"\$H/Library/$sub\" ]; then mkdir -p \"\$OLD\"; rm -rf \"\$OLD/$(basename "$p")\"; mv \"\$H/Library/$sub\" \"\$OLD/\"; chown -R \"\$U\" \"\$OLD\"; fi" ;;
       esac
     done
+    [ -n "$extra" ] && echo "$extra"
     echo '/usr/bin/killall -9 AudioComponentRegistrar 2>/dev/null'
     echo 'exit 0'
   } > "$scripts/postinstall"
@@ -48,8 +49,8 @@ add_component () {   # id title description version root
 # guides (always installed)
 root=build-mac/root-guides; mkdir -p "$root/$APPDIR/Guides"
 cp "docs/Mix System User Guide.pdf" "$root/$APPDIR/Guides/"
-cp INSTALL.txt "$root/$APPDIR/Guides/How to install (read me).txt"
-add_component guides "User guide" "The Mix System user guide (PDF), plus each plugin's quick guide." "1.0" "$root" yes
+add_component guides "User guide" "The Mix System user guide (PDF), plus each plugin's quick guide." "1.1" "$root" yes \
+  'rm -rf "/Applications/Castle Danger Music Company/"*.app "/Applications/Castle Danger Music Company/Guides/How to install (read me).txt"   # gone now: clear what older installs left'
 
 while read -r prefix ver name; do
   src="stage/macOS/$prefix"
@@ -58,9 +59,8 @@ while read -r prefix ver name; do
   mkdir -p "$root/Library/Audio/Plug-Ins/VST3" "$root/Library/Audio/Plug-Ins/Components" "$root/$APPDIR/Guides"
   cp -R "$src"/VST3/*.vst3 "$root/Library/Audio/Plug-Ins/VST3/"
   cp -R "$src"/AU/*.component "$root/Library/Audio/Plug-Ins/Components/"
-  cp -R "$src"/Standalone/*.app "$root/$APPDIR/"
   cp "$src/controls.txt" "$root/$APPDIR/Guides/$name - controls.txt"
-  add_component "$(echo "$prefix" | tr 'A-Z' 'a-z')" "$name" "$desc. Version $ver: VST3, AU and the standalone app." "$ver" "$root"
+  add_component "$(echo "$prefix" | tr 'A-Z' 'a-z')" "$name" "$desc. Version $ver: VST3 and AU." "$ver" "$root"
 done < versions-macOS.txt
 
 cat > build-mac/distribution.xml <<XML
