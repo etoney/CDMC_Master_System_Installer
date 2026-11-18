@@ -12,6 +12,9 @@ permissions:
 
 jobs:
   macos:
+    env:   # only whether the Apple secrets exist, not the secrets themselves
+      HAVE_SIGNING: ${{ secrets.MACOS_CERT_APP_P12 != '' && secrets.MACOS_CERT_INSTALLER_P12 != '' }}
+      HAVE_NOTARY: ${{ secrets.NOTARY_KEY_P8 != '' }}
     runs-on: macos-15-intel   # pkgbuild/productbuild are arch-neutral; the plugins inside are universal
     timeout-minutes: 30
     steps:
@@ -19,8 +22,22 @@ jobs:
       - name: Fetch the plugins
         env: { GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}" }
         run: bash fetch.sh macOS
+      - name: Sign the plug-ins (Developer ID, when the Apple secrets are set)
+        if: env.HAVE_SIGNING == 'true'
+        env:
+          MACOS_CERT_APP_P12: ${{ secrets.MACOS_CERT_APP_P12 }}
+          MACOS_CERT_INSTALLER_P12: ${{ secrets.MACOS_CERT_INSTALLER_P12 }}
+          MACOS_CERT_PASSWORD: ${{ secrets.MACOS_CERT_PASSWORD }}
+        run: bash mac/sign.sh
       - name: Build the .pkg
         run: bash mac/build.sh
+      - name: Notarize and staple (when the Apple secrets are set)
+        if: env.HAVE_NOTARY == 'true' && env.HAVE_SIGNING == 'true'
+        env:
+          NOTARY_KEY_P8: ${{ secrets.NOTARY_KEY_P8 }}
+          NOTARY_KEY_ID: ${{ secrets.NOTARY_KEY_ID }}
+          NOTARY_ISSUER_ID: ${{ secrets.NOTARY_ISSUER_ID }}
+        run: bash mac/notarize.sh
       - name: Test-install it on this Mac
         run: bash mac/test-install.sh
       - name: Publish to downloads-macos
