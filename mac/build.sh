@@ -66,7 +66,7 @@ done < versions-macOS.txt
 cat > build-mac/distribution.xml <<XML
 <?xml version="1.0" encoding="utf-8"?>
 <installer-gui-script minSpecVersion="2">
-    <title>Castle Danger Music Company: Mix System</title>
+    <title>Castle Danger Music Company: Mix System ${PKG_VER:-}</title>
     <organization>com.castledanger</organization>
     <welcome file="welcome.html" mime-type="text/html"/>
     <license file="license.txt"/>

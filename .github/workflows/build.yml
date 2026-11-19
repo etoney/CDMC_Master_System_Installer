@@ -11,10 +11,26 @@ permissions:
   contents: write
 
 jobs:
+  # The package's own version: the build date (Chicago), plus .2, .3... for a second build that day.
+  # Every version is kept: a GitHub release per version, and versioned file names on the site.
+  version:
+    runs-on: ubuntu-latest
+    outputs:
+      ver: ${{ steps.v.outputs.ver }}
+    steps:
+      - id: v
+        env: { GH_TOKEN: "${{ secrets.GITHUB_TOKEN }}" }
+        run: |
+          base=$(TZ=America/Chicago date +%Y.%m.%d); ver=$base; n=1
+          while gh release view "mix-system-v$ver" -R "${{ github.repository }}" >/dev/null 2>&1; do n=$((n+1)); ver="$base.$n"; done
+          echo "ver=$ver" >> "$GITHUB_OUTPUT"; echo "Mix System $ver"
+
   macos:
+    needs: version
     env:   # only whether the Apple secrets exist, not the secrets themselves
       HAVE_SIGNING: ${{ secrets.MACOS_CERT_APP_P12 != '' && secrets.MACOS_CERT_INSTALLER_P12 != '' }}
       HAVE_NOTARY: ${{ secrets.NOTARY_KEY_P8 != '' }}
+      PKG_VER: ${{ needs.version.outputs.ver }}
     runs-on: macos-15-intel   # pkgbuild/productbuild are arch-neutral; the plugins inside are universal
     timeout-minutes: 30
     steps:
@@ -45,10 +61,13 @@ jobs:
         run: |
           set -e
           F=CDMC_master_system_installer-macOS.pkg
-          mkdir -p /tmp/z/CDMC_master_system_installer-macOS && cp "$F" /tmp/z/CDMC_master_system_installer-macOS/
-          cp "docs/Mix System User Guide.pdf" /tmp/z/CDMC_master_system_installer-macOS/
-          (cd /tmp/z && ditto -c -k --sequesterRsrc --keepParent CDMC_master_system_installer-macOS ../CDMC_master_system_installer-macOS.zip)
-          mkdir -p /tmp/dl && cp "$F" /tmp/CDMC_master_system_installer-macOS.zip versions-macOS.txt /tmp/dl/ && cd /tmp/dl && git init -q -b downloads-macos && git add -A
+          D=CDMC_master_system_installer-v$PKG_VER-macOS
+          mkdir -p "/tmp/z/$D" && cp "$F" "/tmp/z/$D/"
+          cp "docs/Mix System User Guide.pdf" "/tmp/z/$D/"
+          (cd /tmp/z && ditto -c -k --sequesterRsrc --keepParent "$D" "../$D.zip")
+          cp "/tmp/$D.zip" .
+          echo "$PKG_VER" > package-version.txt
+          mkdir -p /tmp/dl && cp "$F" "/tmp/$D.zip" versions-macOS.txt package-version.txt /tmp/dl/ && cd /tmp/dl && git init -q -b downloads-macos && git add -A
           git -c user.name=ci -c user.email=ci@users.noreply.github.com commit -qm "$F for ${GITHUB_SHA}"
           for try in 1 2 3 4; do
             git -c http.postBuffer=157286400 push -qf "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}" downloads-macos && break
@@ -56,10 +75,14 @@ jobs:
           done
       - uses: actions/upload-artifact@v4
         with:
-          name: CDMC_master_system_installer-macOS
-          path: CDMC_master_system_installer-macOS.pkg
+          name: mac
+          path: |
+            CDMC_master_system_installer-v*-macOS.zip
+            versions-macOS.txt
 
   windows:
+    needs: version
+    env: { PKG_VER: "${{ needs.version.outputs.ver }}" }
     runs-on: windows-latest
     timeout-minutes: 30
     steps:
@@ -101,10 +124,12 @@ jobs:
         run: |
           set -e
           F=CDMC_master_system_installer-Windows.exe
-          mkdir -p z/CDMC_master_system_installer-Windows && cp "$F" z/CDMC_master_system_installer-Windows/
-          cp "docs/Mix System User Guide.pdf" z/CDMC_master_system_installer-Windows/
-          (cd z && 7z a -tzip -mx=9 ../CDMC_master_system_installer-Windows.zip CDMC_master_system_installer-Windows > /dev/null)
-          mkdir -p /tmp/dl && cp "$F" CDMC_master_system_installer-Windows.zip versions-Windows.txt /tmp/dl/ && cd /tmp/dl && git init -q -b downloads-windows && git add -A
+          D=CDMC_master_system_installer-v$PKG_VER-Windows
+          mkdir -p "z/$D" && cp "$F" "z/$D/"
+          cp "docs/Mix System User Guide.pdf" "z/$D/"
+          (cd z && 7z a -tzip -mx=9 "../$D.zip" "$D" > /dev/null)
+          echo "$PKG_VER" > package-version.txt
+          mkdir -p /tmp/dl && cp "$F" "$D.zip" versions-Windows.txt package-version.txt /tmp/dl/ && cd /tmp/dl && git init -q -b downloads-windows && git add -A
           git -c user.name=ci -c user.email=ci@users.noreply.github.com commit -qm "$F for ${GITHUB_SHA}"
           for try in 1 2 3 4; do
             git -c http.postBuffer=157286400 push -qf "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}" downloads-windows && break
@@ -112,5 +137,26 @@ jobs:
           done
       - uses: actions/upload-artifact@v4
         with:
-          name: CDMC_master_system_installer-Windows
-          path: CDMC_master_system_installer-Windows.exe
+          name: win
+          path: |
+            CDMC_master_system_installer-v*-Windows.zip
+            versions-Windows.txt
+
+  # every version is kept: one GitHub release per package version, with both installers and what's inside
+  release:
+    needs: [version, macos, windows]
+    runs-on: ubuntu-latest
+    env: { GH_TOKEN: "${{ secrets.GITHUB_TOKEN }}", PKG_VER: "${{ needs.version.outputs.ver }}" }
+    steps:
+      - uses: actions/download-artifact@v4
+        with: { path: art, merge-multiple: true }
+      - run: |
+          set -e
+          {
+            echo "The Master Mix System $PKG_VER: one installer for macOS (VST3 + AU, universal) and one for Windows (VST3)."
+            echo; echo "What's inside:"
+            awk '{v=$2; $1=""; $2=""; sub(/^  /,""); print "- " $0 " " v}' art/versions-macOS.txt
+          } > notes.md
+          cat notes.md
+          gh release create "mix-system-v$PKG_VER" -R "${{ github.repository }}" --target "${{ github.sha }}" \
+            --title "The Master Mix System $PKG_VER" --notes-file notes.md art/*.zip
