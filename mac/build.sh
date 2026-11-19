@@ -80,5 +80,5 @@ $choices$refs</installer-gui-script>
 XML
 SIGN=()
 if [ -f build-mac/installer-identity ]; then SIGN=(--sign "$(cat build-mac/installer-identity)" --keychain "$(cat build-mac/keychain)" --timestamp); fi
-productbuild --distribution build-mac/distribution.xml --resources build-mac/resources --package-path build-mac/pkgs "${SIGN[@]}" "$OUT"
+productbuild --distribution build-mac/distribution.xml --resources build-mac/resources --package-path build-mac/pkgs ${SIGN[@]+"${SIGN[@]}"} "$OUT"
 ls -la "$OUT"
