@@ -11,7 +11,7 @@ for line in open(os.path.join(ROOT, "plugins.txt"), encoding="utf-8"):
     parts = [p for p in line.rstrip("\n").split("  ") if p.strip()]
     desc[parts[1].strip()] = parts[-1].strip()
 
-comps, files, icons, gone = [], [], [], []
+comps, files, icons = [], [], []
 for line in open(os.path.join(ROOT, "versions-Windows.txt"), encoding="utf-8"):
     prefix, ver, name = line.strip().split(" ", 2)
     cid = prefix.lower()
@@ -23,16 +23,11 @@ for line in open(os.path.join(ROOT, "versions-Windows.txt"), encoding="utf-8"):
     for v in vst3:
         b = os.path.basename(v)
         files.append(f'Source: "{v}\\*"; DestDir: "{{commoncf64}}\\VST3\\{b}"; Flags: recursesubdirs createallsubdirs ignoreversion; Components: {cid}')
-    # the standalone apps are gone: clear the .exe and Start-menu shortcut an older install left
-    gone.append(f'Type: files; Name: "{{app}}\\{name}.exe"')
-    gone.append(f'Type: files; Name: "{{app}}\\{prefix}.exe"')
-    gone.append(f'Type: files; Name: "{{group}}\\{name}.lnk"')
     files.append(f'Source: "{os.path.join(src, "controls.txt")}"; DestDir: "{{app}}\\Guides"; DestName: "{name} - controls.txt"; Flags: ignoreversion; Components: {cid}')
 
 guide = os.path.join(ROOT, "docs", "Mix System User Guide.pdf")
 files.append(f'Source: "{guide}"; DestDir: "{{app}}\\Guides"; Flags: ignoreversion')
 icons.append('Name: "{group}\\Mix System User Guide"; Filename: "{app}\\Guides\\Mix System User Guide.pdf"')
-gone.append('Type: files; Name: "{app}\\Guides\\How to install (read me).txt"')
 icons.append('Name: "{group}\\Uninstall the Mix System"; Filename: "{uninstallexe}"')
 
 ver = os.environ.get("PKG_VER") or datetime.date.today().strftime("%Y.%m.%d")
@@ -68,9 +63,6 @@ Name: "custom"; Description: "Pick the plugins"; Flags: iscustom
 """ + "\n".join(files) + """
 
 [Icons]
-""" + "\n".join(icons) + """
-
-[InstallDelete]
-""" + "\n".join(gone) + "\n"
+""" + "\n".join(icons) + "\n"
 open(os.path.join(ROOT, "build-win", "installer.iss"), "w", encoding="utf-8").write(iss)
 print(iss)

@@ -8,8 +8,8 @@ cp mac/resources/* build-mac/resources/
 cp LICENSE.txt build-mac/resources/license.txt
 
 choices=""; outline=""; refs=""
-add_component () {   # id title description version root [required] [extra postinstall line]
-  local id="$1" title="$2" desc="$3" ver="$4" root="$5" required="${6:-no}" extra="${7:-}"
+add_component () {   # id title description version root [required]
+  local id="$1" title="$2" desc="$3" ver="$4" root="$5" required="${6:-no}"
   local plist="build-mac/$id.plist" scripts="build-mac/scripts-$id"
   xattr -cr "$root" 2>/dev/null || true
   # bundles must install where we say, not wherever an older copy happens to sit
@@ -18,20 +18,13 @@ add_component () {   # id title description version root [required] [extra posti
     /usr/libexec/PlistBuddy -c "Set :$i:BundleIsRelocatable false" "$plist" 2>/dev/null \
       || /usr/libexec/PlistBuddy -c "Add :$i:BundleIsRelocatable bool false" "$plist"
     i=$((i+1)); done
-  # postinstall: clear quarantine on exactly what this component installed, park older per-user copies, refresh AU cache
+  # postinstall: clear quarantine on exactly what this component installed, refresh the AU cache
   mkdir -p "$scripts"
   {
     echo '#!/bin/bash'
-    echo 'U=$(stat -f %Su /dev/console 2>/dev/null); H=$(dscl . -read /Users/"$U" NFSHomeDirectory 2>/dev/null | awk "{print \$2}")'
-    echo 'OLD="$H/Library/Audio/Plug-Ins Disabled/Castle Danger (older copies)"'
-    (cd "$root" && find . -maxdepth 6 \( -name "*.vst3" -o -name "*.component" -o -name "*.app" -o -name "*.txt" -o -name "*.pdf" \) -prune -print) | sed 's|^\./||' | while read -r p; do
+    (cd "$root" && find . -maxdepth 6 \( -name "*.vst3" -o -name "*.component" -o -name "*.txt" -o -name "*.pdf" \) -prune -print) | sed 's|^\./||' | while read -r p; do
       echo "/usr/bin/xattr -dr com.apple.quarantine \"/$p\" 2>/dev/null"
-      case "$p" in Library/Audio/Plug-Ins/*)
-        sub="${p#Library/}"
-        echo "if [ -n \"\$H\" ] && [ -e \"\$H/Library/$sub\" ]; then mkdir -p \"\$OLD\"; rm -rf \"\$OLD/$(basename "$p")\"; mv \"\$H/Library/$sub\" \"\$OLD/\"; chown -R \"\$U\" \"\$OLD\"; fi" ;;
-      esac
     done
-    [ -n "$extra" ] && echo "$extra"
     echo '/usr/bin/killall -9 AudioComponentRegistrar 2>/dev/null'
     echo 'exit 0'
   } > "$scripts/postinstall"
@@ -49,8 +42,7 @@ add_component () {   # id title description version root [required] [extra posti
 # guides (always installed)
 root=build-mac/root-guides; mkdir -p "$root/$APPDIR/Guides"
 cp "docs/Mix System User Guide.pdf" "$root/$APPDIR/Guides/"
-add_component guides "User guide" "The Mix System user guide (PDF), plus each plugin's quick guide." "1.1" "$root" yes \
-  'rm -rf "/Applications/Castle Danger Music Company/"*.app "/Applications/Castle Danger Music Company/Guides/How to install (read me).txt"   # gone now: clear what older installs left'
+add_component guides "User guide" "The Mix System user guide (PDF), plus each plugin's quick guide." "1.1" "$root" yes
 
 while read -r prefix ver name; do
   src="stage/macOS/$prefix"

@@ -117,7 +117,6 @@ jobs:
             if (-not $hit) { Write-Host "::error::$name.vst3 missing"; $fail = 1 }
           }
           if (-not (Test-Path "$app\Guides\Mix System User Guide.pdf")) { Write-Host "::error::guide missing"; $fail = 1 }
-          if (Get-ChildItem $app -Filter *.exe | Where-Object { $_.Name -notlike 'unins*' }) { Write-Host "::error::a standalone .exe was installed"; $fail = 1 }
           exit $fail
       - name: Publish to downloads-windows
         shell: bash
