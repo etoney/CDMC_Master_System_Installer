@@ -2,8 +2,8 @@
 master          TheMaster    The Master                    Mix analysis + the brain of the Mix System (master bus, last)
 the_servant     TheServant   The Servant                   Track assistant: clean-up, tone, compressor, transients, de-esser
 the_freak       TheFreak     The Freak                     Dynamic EQ (master bus)
-chop_shop       ChopShop     Chop Shop                     Clipper (master bus)
+chop_shop       Cutthroat    Cutthroat                     Clipper (master bus)
 dominatrix      Dominatrix   Dominatrix                    Glue, colour, stereo and loudness (master bus)
-buzzkill        BuzzKill     BuzzKill                      Amp hum and noise remover (guitar and bass tracks)
+buzzkill        DeadAir      Dead Air                      Amp hum and noise remover (guitar and bass tracks)
 flatliner       Flatliner    Flatliner                     Automatic fader rider (lead vocal or lead)
 low_blow        LowBlow      Low Blow                      Kick/bass ducker (bass track, kick on the sidechain)

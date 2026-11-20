@@ -1,7 +1,7 @@
 # CDMC_master_system_installer
 
-One installer for the Castle Danger Music Company **Mix System**: The Master, The Servant, The Freak, Chop Shop,
-Dominatrix, BuzzKill, Flatliner and Low Blow.
+One installer for the Castle Danger Music Company **Mix System**: The Master, The Servant, The Freak, Cutthroat,
+Dominatrix, Dead Air, Flatliner and Low Blow.
 
 - **macOS**: `CDMC_master_system_installer-macOS.pkg` (branch `downloads-macos`). Plug-ins to `/Library/Audio/Plug-Ins`,
   guides to `/Applications/Castle Danger Music Company/Guides`. Clears the quarantine flag on what it installs and
