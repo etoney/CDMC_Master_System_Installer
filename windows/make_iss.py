@@ -24,6 +24,9 @@ for line in open(os.path.join(ROOT, "versions-Windows.txt"), encoding="utf-8"):
         b = os.path.basename(v)
         files.append(f'Source: "{v}\\*"; DestDir: "{{commoncf64}}\\VST3\\{b}"; Flags: recursesubdirs createallsubdirs ignoreversion; Components: {cid}')
     files.append(f'Source: "{os.path.join(src, "controls.txt")}"; DestDir: "{{app}}\\Guides"; DestName: "{name} - controls.txt"; Flags: ignoreversion; Components: {cid}')
+    notices = os.path.join(src, "THIRD-PARTY-NOTICES.txt")   # licenses and credits (JUCE, VST3, ARA...)
+    if os.path.exists(notices):
+        files.append(f'Source: "{notices}"; DestDir: "{{app}}\\Guides"; DestName: "{name} - third-party notices.txt"; Flags: ignoreversion; Components: {cid}')
 
 guide = os.path.join(ROOT, "docs", "Mix System User Guide.pdf")
 files.append(f'Source: "{guide}"; DestDir: "{{app}}\\Guides"; Flags: ignoreversion')

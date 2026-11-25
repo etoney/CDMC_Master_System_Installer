@@ -32,7 +32,11 @@ terms. Our full Terms of Use are at https://castledangermusic.com/terms
 
 6. THIRD-PARTY COMPONENTS
    The Software includes third-party components provided under their own
-   license terms. See THIRD-PARTY-NOTICES.txt.
+   license terms, including the ARA SDK by Celemony Software GmbH (Apache
+   License 2.0). Each plugin's notices are installed in the Guides folder as
+   "<plugin> - third-party notices.txt". ARA Audio Random Access is a
+   trademark of Celemony Software GmbH; VST is a registered trademark of
+   Steinberg Media Technologies GmbH.
 
 7. NO WARRANTY
    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR

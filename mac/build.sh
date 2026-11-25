@@ -52,6 +52,9 @@ while read -r prefix ver name; do
   cp -R "$src"/VST3/*.vst3 "$root/Library/Audio/Plug-Ins/VST3/"
   cp -R "$src"/AU/*.component "$root/Library/Audio/Plug-Ins/Components/"
   cp "$src/controls.txt" "$root/$APPDIR/Guides/$name - controls.txt"
+  if [ -f "$src/THIRD-PARTY-NOTICES.txt" ]; then   # licenses and credits (JUCE, VST3, ARA...)
+    cp "$src/THIRD-PARTY-NOTICES.txt" "$root/$APPDIR/Guides/$name - third-party notices.txt"
+  fi
   add_component "$(echo "$prefix" | tr 'A-Z' 'a-z')" "$name" "$desc. Version $ver: VST3 and AU." "$ver" "$root"
 done < versions-macOS.txt
 
