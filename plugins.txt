@@ -5,5 +5,5 @@ the_freak       TheFreak     The Freak                     Dynamic EQ (master bu
 chop_shop       Cutthroat    Cutthroat                     Clipper (master bus)
 dominatrix      Dominatrix   Dominatrix                    Glue, colour, stereo and loudness (master bus)
 buzzkill        DeadAir      Dead Air                      Amp hum and noise remover (guitar and bass tracks)
-flatliner       Flatliner    Flatliner                     Automatic fader rider (lead vocal or lead)
+flatliner       Flatliner    Flatliner                     Auto leveler (lead vocal or lead)
 low_blow        LowBlow      Low Blow                      Kick/bass ducker (bass track, kick on the sidechain)
