@@ -54,6 +54,9 @@ jobs:
           NOTARY_KEY_ID: ${{ secrets.NOTARY_KEY_ID }}
           NOTARY_ISSUER_ID: ${{ secrets.NOTARY_ISSUER_ID }}
         run: bash mac/notarize.sh
+      - name: Warn when the pkg is signed but not notarized
+        if: env.HAVE_SIGNING == 'true' && env.HAVE_NOTARY != 'true'
+        run: echo "::warning::The pkg is signed but not notarized, so macOS still blocks the first open. Add NOTARY_KEY_P8, NOTARY_KEY_ID and NOTARY_ISSUER_ID."
       - name: Test-install it on this Mac
         run: bash mac/test-install.sh
       - name: Publish to downloads-macos
