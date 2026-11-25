@@ -1,0 +1,29 @@
+@page { size: Letter; margin: 0; }
+* { box-sizing: border-box; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+html, body { margin: 0; }
+.cover { width: 8.5in; height: 11in; position: relative; overflow: hidden;
+  background: url(@@COVER@@) center/cover, #1b1613; color: #ecdfc2; font-family: 'TeX Gyre Heros Cn'; }
+.hz { position: absolute; left: 0.65in; right: 0.65in; height: 3px; background: #c0502a; }
+.hz.top { top: 0.35in; } .hz.bottom { bottom: 0.3in; }
+.badge { position: absolute; top: 0.6in; left: 0.65in; width: 3.6in; box-shadow: 0 6px 0 #0c0806; }
+.kicker { position: absolute; top: 0.78in; right: 0.65in; font-size: 9pt; letter-spacing: 3px; color: #d9a21f;
+  border: 1px solid #d9a21f; padding: 4px 9px; font-weight: bold; }
+h1 { position: absolute; top: 2.05in; left: 0.6in; right: 0.5in; margin: 0; font-weight: bold;
+  font-size: 92pt; line-height: .86; letter-spacing: 2px; color: #ecdfc2; text-shadow: 0 4px 0 #0c0806; }
+h1 .the { font-size: 40pt; letter-spacing: 6px; color: #e0703a; vertical-align: top; position: relative; top: 10px; }
+h1 .ms { color: #e0703a; font-size: 70pt; letter-spacing: 4px; }
+.sub { position: absolute; top: 4.42in; left: 0.65in; right: 0.65in; font-size: 11.5pt; letter-spacing: 3px; color: #cbbd9f;
+  border-top: 2px solid #c0502a; padding-top: 9px; font-weight: bold; }
+.sub i { color: #d9a21f; font-style: normal; }
+.montage { position: absolute; top: 5.05in; left: 0.5in; right: 0.5in; height: 4.55in; }
+.mt { position: absolute; padding: 5px; background: linear-gradient(180deg, #3b2c22, #1d1612); border: 1px solid #5a3f2d;
+  box-shadow: 0 8px 0 #0c0806; }
+.mt img { display: block; width: 100%; }
+.mt0 { width: 4.7in; left: 0.05in; top: 0.15in; transform: rotate(-2.2deg); z-index: 2; }
+.mt1 { width: 3.0in; right: 0.0in; top: 0.0in; transform: rotate(3deg); z-index: 1; }
+.mt2 { width: 3.2in; right: 0.15in; top: 1.95in; transform: rotate(-1.4deg); z-index: 3; }
+.mt3 { width: 2.4in; left: 0.3in; top: 2.95in; transform: rotate(2.4deg); z-index: 4; }
+.mt4 { width: 2.3in; left: 2.75in; top: 3.05in; transform: rotate(-3deg); z-index: 5; }
+.foot { position: absolute; bottom: 0.48in; left: 0.65in; right: 0.65in; display: flex; justify-content: space-between; align-items: flex-end; }
+.slogan { font-family: 'Inter'; font-style: italic; font-size: 17pt; color: #e0703a; }
+.meta { text-align: right; font-size: 8.5pt; letter-spacing: 2.5px; color: #a99a80; line-height: 1.6; font-weight: bold; }

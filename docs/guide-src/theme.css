@@ -1,0 +1,93 @@
+@page { size: Letter; }
+* { box-sizing: border-box; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+html, body { margin: 0; background: #1b1613; }
+body { font-family: 'Inter', sans-serif; font-size: 9.6pt; line-height: 1.5; color: #d9ccb2; }
+main { padding: 0 0.65in; }
+
+/* chapter opener */
+section.chapter { break-before: page; }
+section.chapter:first-child { break-before: auto; }
+.chap-head { position: relative; display: flex; align-items: center; gap: 16px;
+  margin: 4px 0 18px; padding: 14px 18px 14px 14px;
+  background: linear-gradient(180deg, #2a201a, #1f1814);
+  border: 1px solid #4a3426; border-left: 6px solid #c0502a;
+  box-shadow: inset 0 0 0 1px #120d0b, 0 3px 0 #0f0b09; }
+.chap-head::before, .chap-head::after { content: ''; position: absolute; width: 7px; height: 7px; border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, #a58a70, #4b3a2d 60%, #1b1410); top: 6px; right: 8px; }
+.chap-head::after { top: auto; bottom: 6px; }
+.port { width: 54px; height: 54px; border-radius: 50%; }
+.chap-num { font-family: 'TeX Gyre Heros Cn'; font-weight: bold; font-size: 40pt; line-height: 1; color: #c0502a; letter-spacing: 1px; }
+h2 { margin: 0; font-family: 'TeX Gyre Heros Cn'; font-weight: bold; text-transform: uppercase;
+  font-size: 25pt; line-height: 1.02; letter-spacing: 1.5px; color: #ecdfc2; }
+
+h3 { font-family: 'TeX Gyre Heros Cn'; font-weight: bold; text-transform: uppercase; letter-spacing: 1.8px;
+  font-size: 13.5pt; color: #e0703a; margin: 22px 0 8px; padding-bottom: 5px;
+  border-bottom: 1px solid #3d2d22; break-after: avoid; position: relative; }
+h3::before { content: '//'; color: #d9a21f; margin-right: 8px; letter-spacing: 0; }
+
+p { margin: 0 0 9px; orphans: 3; widows: 3; }
+strong { color: #f1e6cc; font-weight: 700; }
+a { color: #e0703a; }
+ul, ol { margin: 0 0 10px; padding-left: 20px; }
+li { margin: 0 0 5px; }
+ul > li::marker { content: '\25A0  '; color: #c0502a; font-size: 7pt; }
+ol { counter-reset: n; list-style: none; padding-left: 0; }
+ol > li { counter-increment: n; position: relative; padding-left: 34px; margin-bottom: 8px; break-inside: avoid; }
+ol > li::before { content: counter(n); position: absolute; left: 0; top: 0; width: 22px; height: 22px;
+  border-radius: 50%; background: radial-gradient(circle at 35% 30%, #e0703a, #8a2f12 70%);
+  border: 1px solid #f08a50; color: #fff3e0; font-family: 'TeX Gyre Heros Cn'; font-weight: bold;
+  font-size: 10.5pt; text-align: center; line-height: 21px; }
+ol ul { margin-top: 5px; }
+
+code { font-family: 'DejaVu Sans Mono', monospace; font-size: 8.2pt; color: #e8b73a;
+  background: #120e0c; border: 1px solid #3a2b20; padding: 0 4px; border-radius: 2px; }
+pre { background: #0e0b09; border: 1px solid #3a2b20; border-left: 3px solid #d9a21f; padding: 9px 11px;
+  white-space: pre-wrap; word-break: break-all; margin: 6px 0 8px; }
+pre code { border: 0; padding: 0; background: none; color: #e8b73a; }
+
+/* tables as riveted plates */
+.tbl { margin: 8px 0 14px; border: 1px solid #4a3426; background: #211a15; position: relative;
+  box-shadow: inset 0 0 0 1px #120d0b; break-inside: auto; }
+table { width: 100%; border-collapse: collapse; font-size: 8.7pt; line-height: 1.38; }
+thead th { background: linear-gradient(180deg, #7a2a12, #5e200e); color: #f3e5c8; text-align: left;
+  font-family: 'TeX Gyre Heros Cn'; font-weight: bold; text-transform: uppercase; letter-spacing: 1.5px;
+  font-size: 8.5pt; padding: 6px 9px; border-bottom: 2px solid #d9a21f; }
+tbody td { padding: 6px 9px; border-top: 1px solid #33271f; vertical-align: top; }
+tbody tr:nth-child(even) td { background: #261e18; }
+tbody td:first-child { font-family: 'TeX Gyre Heros Cn'; font-weight: bold; color: #ecdfc2; letter-spacing: .6px;
+  font-size: 9.4pt; white-space: nowrap; }
+tr { break-inside: avoid; }
+
+/* screenshots in a bezel */
+figure { margin: 10px 0 16px; break-inside: avoid; }
+.bezel { padding: 7px; background: linear-gradient(180deg, #3b2c22, #1d1612); border: 1px solid #5a3f2d;
+  box-shadow: 0 4px 0 #0e0a08, inset 0 0 0 1px #120d0b; position: relative; }
+.bezel img { display: block; width: 100%; border: 1px solid #0c0907; }
+figcaption { font-family: 'TeX Gyre Heros Cn'; text-transform: uppercase; letter-spacing: 1.5px; font-size: 7.6pt;
+  color: #8f7d63; margin-top: 7px; }
+figcaption::before { content: 'FIG \2014  '; color: #c0502a; font-weight: bold; }
+.shot { width: 92%; margin-left: 4%; }
+
+/* callout */
+.callout { display: flex; gap: 12px; align-items: center; margin: 12px 0 10px; padding: 9px 12px;
+  background: #241b14;
+  border: 1px solid #d9a21f; border-left: 6px solid #d9a21f; color: #eadcbc; break-after: avoid; }
+.callout-k { font-family: 'TeX Gyre Heros Cn'; font-weight: bold; text-transform: uppercase; letter-spacing: 1.5px;
+  color: #d9a21f; font-size: 11pt; white-space: nowrap; }
+
+/* session map */
+.mapfig { border: 1px solid #4a3426; background: #15100d; padding: 0 12px 10px; position: relative; break-inside: avoid; }
+.plate-label { display: inline-block; margin: 0 0 8px -12px; background: #c0502a; color: #fff1dc; font-family: 'TeX Gyre Heros Cn';
+  font-weight: bold; letter-spacing: 2px; font-size: 8pt; padding: 2px 8px; }
+.map { width: 100%; display: block; font-family: 'TeX Gyre Heros Cn'; }
+.map text { font-size: 10px; letter-spacing: 1px; text-anchor: middle; font-weight: bold; }
+.map .m-h { text-anchor: start; fill: #d9a21f; font-size: 10px; letter-spacing: 2.5px; }
+.map .m-trk { text-anchor: start; fill: #cbbd9f; }
+.map .c-svt rect { fill: #3a2a20; stroke: #c0502a; } .map .c-svt text { fill: #f0e2c4; }
+.map .c-fx rect { fill: #221a15; stroke: #6a5040; } .map .c-fx text { fill: #cbbd9f; }
+.map .c-mst rect { fill: #a33a17; stroke: #ffb070; } .map .c-mst text { fill: #fff3df; font-size: 12px; }
+.map .m-wire { fill: none; stroke: #6a5040; stroke-width: 1.4; }
+.map .m-sc { fill: none; stroke: #d9a21f; stroke-width: 1.4; stroke-dasharray: 4 3; }
+.map .m-sc-t { fill: #d9a21f; font-size: 8px; text-anchor: start; }
+.map .m-out { fill: #8f7d63; }
+.map .m-note { fill: #e0703a; font-size: 9px; }
