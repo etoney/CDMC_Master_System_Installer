@@ -17,5 +17,10 @@ for b in /Library/Audio/Plug-Ins/VST3/*.vst3 /Library/Audio/Plug-Ins/Components/
   [ -f "$bin" ] || bin=$(ls "$b"/Contents/MacOS/* | head -1)
   echo "$(basename "$b"): $(lipo -archs "$bin")"
   if xattr -lr "$b" | grep -q quarantine; then echo "::error::$b still quarantined"; fail=1; fi
+  # with the Apple secrets set, every installed plug-in must still carry a valid Developer ID signature
+  if [ "${HAVE_SIGNING:-}" = "true" ]; then
+    codesign --verify --deep --strict "$b" || { echo "::error::$b signature broken after install"; fail=1; }
+    codesign -dv "$b" 2>&1 | grep -q 'Authority=Developer ID Application' || { echo "::error::$b not Developer ID signed"; fail=1; }
+  fi
 done
 exit $fail

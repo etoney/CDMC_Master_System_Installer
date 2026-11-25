@@ -5,8 +5,9 @@ Dominatrix, Dead Air, Flatliner and Low Blow.
 
 - **macOS**: `CDMC_master_system_installer-macOS.pkg` (branch `downloads-macos`). Plug-ins to `/Library/Audio/Plug-Ins`,
   guides to `/Applications/Castle Danger Music Company/Guides`. Clears the quarantine flag on what it installs and
-  resets the AU cache. No Terminal needed; unsigned for now,
-  so the first open needs **System Settings > Privacy & Security > Open Anyway**.
+  resets the AU cache. No Terminal needed. Signed and notarized
+  once the Apple secrets are set (see [mac/SIGNING.md](mac/SIGNING.md)); until then it's unsigned, so the first open
+  needs **System Settings > Privacy & Security > Open Anyway**.
 - **Windows**: `CDMC_master_system_installer-Windows.exe` (branch `downloads-windows`), Inno Setup. VST3 to
   `C:\Program Files\Common Files\VST3`, guides to `C:\Program Files\Castle Danger Music Company\Guides`.
 

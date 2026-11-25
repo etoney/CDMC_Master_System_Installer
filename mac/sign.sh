@@ -27,6 +27,8 @@ find stage/macOS -maxdepth 3 \( -name "*.vst3" -o -name "*.component" \) -prune 
   xattr -cr "$b"
   codesign --force --deep --options runtime --timestamp --sign "$APP_ID" "$b"
   codesign --verify --deep --strict "$b"
+  # notarization needs the hardened runtime on every bundle
+  codesign -dv "$b" 2>&1 | grep -q 'flags=.*runtime' || { echo "::error::$b has no hardened runtime"; exit 1; }
   echo "  signed $(basename "$b")"
 done
 mkdir -p build-mac
