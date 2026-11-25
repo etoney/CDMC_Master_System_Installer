@@ -41,13 +41,13 @@ The Master listens to your mix while you're still mixing, compares it with your 
 
 | Plugin | Version | Goes on | What it does in the system |
 | --- | --- | --- | --- |
-| The Master | 1.15.1 | Master bus, last | Analyses the mix, prescribes plugins, sets them, explains why |
+| The Master | 1.16.0 | Master bus, last | Analyses the mix, prescribes plugins, sets them, explains why |
 | The Freak | 1.2.0 | Master bus, first (when prescribed); guitars or a guitar bus, to unmask the vocal | Dynamic EQ: cuts the ranges that jump out, or makes room for the vocal while it sings |
 | Cutthroat | 1.4.0 | Master bus, before Dominatrix; also drum tracks | Shaves the peaks that stick out |
 | Dominatrix | 1.4.1 | Master bus, before The Master; also a thin bass | Glue, colour, stereo; peaks held at -6 dB, or loudness into a -1 dB ceiling |
 | The Servant | 0.10.0 | Every track you want balanced | Clean-up, resonance control, de-essing and a transient shaper; runs The Master's tone, compression and level |
 | Dead Air | 2.4.0 | Guitar and bass tracks, right after the amp sim | Removes hum and amp noise between notes |
-| Flatliner | 1.4.1 | Lead vocal (or any lead), first on the track | Auto leveler: evens out the words; louder sections stay louder |
+| Flatliner | 1.4.2 | Each lead or backing vocal track (or lead guitar), on the clip (ARA) or first on the track | Auto leveler: evens out the words; louder sections stay louder |
 | Low Blow | 1.1.0 | Bass track, with the kick on its sidechain | Ducks the bass under each kick so they stop fighting |
 
 The Mix System installer puts all eight on your computer at these versions, and they link to each other by themselves. Everything runs offline, on your computer only.
@@ -74,9 +74,9 @@ Quit your DAW before installing, then rescan plugins when you reopen it. To upda
 
 - **Master bus**, in this order: The Freak (when prescribed), Cutthroat, Dominatrix, then **The Master last**. The Master must hear exactly what you will export.
 - **Each track** you want balanced: The Servant. Its **ROLE** (top right) is set by the track name when you name the track for it (see the naming table under The Servant); otherwise pick one of: Lead Vocal, Backing Vocals, Lead Guitar, Rhythm Guitar, Bass, Kick, Snare, Drums, Keys / Pads or Other. The Master balances the mix by role: the lead vocal and lead guitar stay on top, backing vocals sit under the lead, kick and bass own the low end.
-- **Not on buses.** Leave The Servant and the track plugins off your drum bus, vocal bus and other groups: the tracks inside already have their own. The Master spots a Servant on a bus, leaves it out and tells you to take it off; it never holds up UPDATE. The one bus plugin is Flatliner on a lead or backing vocal bus, when The Master asks for it.
+- **Not on buses.** Leave The Servant and the track plugins off your drum bus, vocal bus and other groups: the tracks inside already have their own. The Master spots a Servant on a bus, leaves it out and tells you to take it off; it never holds up UPDATE. That goes for Flatliner too: it belongs on the tracks.
 - **Guitar and bass tracks** with amp noise: Dead Air, right after the amp sim and before The Servant, reverb and delay.
-- **The lead vocal** (or another lead that jumps in level): Flatliner, first on the track. When the lead is spread over several tracks (doubles, comps), send only the lead tracks to a lead bus and put Flatliner there. Keep the backing vocals off it: Flatliner can't tell them apart from the lead, so it would lift them up to the lead whenever they sing alone. When the backing vocals jump around too, give them their own bus with its own Flatliner; The Master sets that one to a gentle ride (RANGE 3 dB). The Servants stay on the vocal tracks, not on the buses.
+- **The lead vocal** (or another lead that jumps in level): Flatliner on each of its tracks, applied to the clip (ARA) or first on the track. When the lead is spread over several tracks (doubles, comps), each track gets its own Flatliner and The Master sets them together, so the parts on different tracks meet at one level. Backing vocals that jump around get a Flatliner on each of their tracks too, set to a gentle ride (RANGE 3 dB).
 - **The bass track**: Low Blow, with the kick sent to its sidechain input. In Fender Studio Pro, click the sidechain button in Low Blow's window and pick the kick track.
 - **Tracks that hide the lead vocal** (usually the guitars): The Freak, after The Servant, with the lead vocal sent to its sidechain. Three or more guitars: one Freak on a guitar bus (name it "Guitar Bus" or "Rhythm GTR Bus") instead of one per track. See UNMASK below.
 - **Drum tracks** whose hits make the mix's peaks: Cutthroat, after The Servant. **A thin bass**: Dominatrix, after The Servant (before Low Blow). The Master asks for these when the mix needs them.
@@ -356,11 +356,15 @@ Flatliner is an auto leveler (*Level the Field*): it levels the track for you, p
 - **No latency.** Every move is planned ahead, so the level is already there when a word starts, with no lookahead.
 - **No pumping.** It knows where the breaths and gaps are, holds the level through them, and glides to the next phrase's level just before it starts.
 
-The knobs work as usual, and turning one re-plans at once. THE LINE shows the whole take with the planned ride and a marker where playback is. If you comp, trim or move the clip, Flatliner reads it again by itself. MUSIC works in live mode only, since a clip has no sidechain. ARA works on clips, not buses, so a lead vocal bus still uses Flatliner in live mode, and so does a DAW without ARA (Ableton Live).
+The knobs work as usual, and turning one re-plans at once. THE LINE shows the whole take with the planned ride and a marker where playback is. If you comp, trim or move the clip, Flatliner reads it again by itself. MUSIC works in live mode only, since a clip has no sidechain. In a DAW without ARA (Ableton Live), Flatliner works in live mode, first on each track.
 
-A lead that Flatliner levels doesn't also get The Servant's compressor for its jumps. Without Flatliner, The Master asks for it when the lead swings more than about 10 dB: on the lead's own track, or on a lead bus when the lead is spread over several tracks. Backing vocals that swing get their own bus and a gentle Flatliner (RANGE 3 dB), so they stay under the lead. Use one Flatliner per vocal: if the lead track has its own Flatliner and also goes to a lead bus with one, remove one of them, or the lead is leveled twice.
+A lead that Flatliner levels doesn't also get The Servant's compressor for its jumps. Without Flatliner, The Master asks for it when the lead swings more than about 10 dB, on each of the lead's tracks. Backing vocals that swing get a gentle Flatliner (RANGE 3 dB) on each of their tracks, so they stay under the lead.
 
-**Lead guitar.** A solo behaves like a vocal: low notes and legato runs sink, and bends, pinch harmonics and picked accents jump out. When the lead guitar swings more than about 10 dB, The Master asks for Flatliner on it: first on the track (after Dead Air, if it has one), or on a lead guitar bus named for it ("Lead GTR Bus") when the solo is spread over several tracks. On a guitar it sets a slower SPEED than on a vocal, so held notes and feedback ring out without pumping. RANGE is at most 6 dB, so the solo keeps its shape, and GATE sits above the amp's hiss, so the noise between phrases is never lifted. Rhythm guitars don't get Flatliner. The amp already holds them level, and their quiet bits (palm mutes, stops) are part of the riff. If you put it on a clean or acoustic part yourself, The Master sets it up the same gentle way.
+**Several tracks, set together.** The Master sets all the Flatliners of a part together: the lead vocal's tracks, the backing vocals' and the lead guitar's. The track that plays the most is the main one. A track that takes turns with it, such as a chorus recorded on its own track, gets an OUTPUT that brings it to the main track's level, so the parts meet. A double that sings along gets the main track's RANGE and SPEED, so the two move as one, and keeps its own balance (The Servant's TRIM sets that).
+
+**Flatliner goes on tracks, not buses.** A bus has no clip, so ARA can't work there. If you still have a Flatliner on a vocal bus from an older session, it keeps working in live mode, and The Master suggests moving it to the tracks.
+
+**Lead guitar.** A solo behaves like a vocal: low notes and legato runs sink, and bends, pinch harmonics and picked accents jump out. When the lead guitar swings more than about 10 dB, The Master asks for Flatliner on it: on each of its tracks, applied to the clip (ARA) or first on the track (after Dead Air, if it has one), all set together. On a guitar it sets a slower SPEED than on a vocal, so held notes and feedback ring out without pumping. RANGE is at most 6 dB, so the solo keeps its shape, and GATE sits above the amp's hiss, so the noise between phrases is never lifted. Rhythm guitars don't get Flatliner. The amp already holds them level, and their quiet bits (palm mutes, stops) are part of the riff. If you put it on a clean or acoustic part yourself, The Master sets it up the same gentle way.
 
 ### Low Blow (bass track, kick on the sidechain)
 
